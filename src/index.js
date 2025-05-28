@@ -10,7 +10,23 @@ dotenv.config({ path: './env' }); // Load environment variables from .env file
 
 
 
-connectDB() // Call the connectDB function to establish a connection to the database
+connectDB()
+.then(()=>{
+   app.on("error", (err) => {
+      console.error('Error connecting to the database', err);
+      throw err; // rethrow the error to stop the execution
+   })
+   
+    app.listen(process.env.PORT, () => {
+      console.log(`Server is running on port ${process.env.PORT}`);
+   })
+   
+
+
+})
+.catch((err)=>{
+  console.log('MONGODB connection failed!!', err);
+}) // Call the connectDB function to establish a connection to the database
 
 
 
