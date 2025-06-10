@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 // import mongoose from 'mongoose';
 // import { DB_NAME } from './constants'; 
 import connectDB from './db/index.js'; // Import the connectDB function
-
+import {app} from './app.js'
 dotenv.config({ path: './env' }); // Load environment variables from .env file
 
 
@@ -28,6 +28,9 @@ connectDB()
   console.log('MONGODB connection failed!!', err);
 }) // Call the connectDB function to establish a connection to the database
 
+app.get('/', (req, res) => {
+   res.send('Hello');
+})
 
 
 

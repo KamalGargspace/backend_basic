@@ -1,12 +1,40 @@
 const asyncHandler = (requestHandler) => {
-    (req,res,next) => {
-        Promise.resolve(requestHandler(req, res, next))
-            .catch((err) => {next(err)})
+    return (req, res, next) => {
+        Promise.resolve(requestHandler(req, res, next)).catch((err) => next(err))
     }
 }
 
 
-export default asyncHandler;
+export { asyncHandler }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //wrapper function to handle async errors in express routes using try and catch
 // const asyncHandler = (fn)=>(req,res,next)=>{
