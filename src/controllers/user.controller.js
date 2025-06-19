@@ -4,6 +4,7 @@ import { User } from '../models/user.model.js';
 import {uploadOnCloudinary} from '../utils/cloudinary.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 
 const generateAccessTokenandRefreshToken = async (userID) =>{
    try{
@@ -156,8 +157,8 @@ const loginUser = asyncHandler(async (req, res) => {
 const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(req.user._id, 
      { 
-      $set :{
-         refreshToken: undefined
+      $unset :{
+         refreshToken: 1
       }
    },
       {
@@ -222,7 +223,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 const changeCurrentPasswword = asyncHandler(async(req,res)=>{
    const {oldPassword, newPassword} = req.body;
 
-   const user = User.findById(req.user?._id)
+   const user = await User.findById(req.user?._id)
 
    const isPasswordValid = await user.isPasswordCorrect(oldPassword);
    if(!isPasswordValid) {
@@ -250,7 +251,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
       throw new ApiError(400, "all fileds are required");
     }
 
-    const user = User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
       req.user?._id,
       {
          $set:{
@@ -263,9 +264,10 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     ).select("-refreshToken -password");
 
 
+
     return res
     .status(200)
-    .json(new ApiResponse(200, user, "User details updated successfully"));
+    .json(new ApiResponse(200,user, "User details updated successfully"));
 })
 
 
@@ -326,7 +328,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 
 })
 const getUserChannelProfile = asyncHandler(async (req, res) => {
-   const username = req.params
+   const { username } = req.params
 
    if((!username?.trim())){
       throw new ApiError(400, "Username is missing");
@@ -426,10 +428,6 @@ const getWatchHistory = asyncHandler(async (req, res) => {
                   }
                }
             ]
-         }
-      },
-      {
-         $unwind:{
          }
       }
    ])
